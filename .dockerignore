@@ -1,0 +1,9 @@
+.git/
+.pycaret11/
+.venv/
+pycaret11/
+__pycache__/
+*.pyc
+*.log
+.ipynb_checkpoints/
+.codex/
