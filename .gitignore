@@ -6,6 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
+.pycaret11/
+.codex
+logs.log
+
 # Distribution / packaging
 .Python
 build/
