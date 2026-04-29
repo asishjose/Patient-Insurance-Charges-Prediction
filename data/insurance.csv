@@ -1342,3 +1342,4 @@ age,sex,bmi,children,smoker,region,expenses
 20,female,53.1,0,no,northeast,1163.46
 37,male,39.7,4,no,northeast,19496.72
 39,female,24.3,2,no,northwest,7201.7
+50,female,29.0,1,no,southwest,9777.9
