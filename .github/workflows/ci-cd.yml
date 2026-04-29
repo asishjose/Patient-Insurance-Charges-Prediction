@@ -1,0 +1,47 @@
+name: CI/CD — Build, Test, Docker, Deploy
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'data/**'           # data-only pushes handled by retrain.yml
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements.txt pytest
+      - run: pytest tests/ -v
+
+  build-and-deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_1CF11385CCA643E8A6C172FAD94BEABA }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_F8A341A4FC5C4408BEECAC32FFADDD6A }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_3DE5B20FF7644B41B605E20306F7DEA0 }}
+      - uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Build and Push Docker image
+        run: |
+          docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/insurance-predictor:${{ github.sha }} .
+          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/insurance-predictor:${{ github.sha }}
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'Patient-Insurance-Charges-Prediction'
+          images: ${{ secrets.REGISTRY_LOGIN_SERVER }}/insurance-predictor:${{ github.sha }}
