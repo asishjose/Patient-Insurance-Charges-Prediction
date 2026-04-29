@@ -8,6 +8,10 @@ on:
       - 'data/**.csv'           # New data pushed
   workflow_dispatch:            # Manual trigger
 
+permissions:
+  contents: write
+  id-token: write
+
 jobs:
   retrain-and-deploy:
     runs-on: ubuntu-latest

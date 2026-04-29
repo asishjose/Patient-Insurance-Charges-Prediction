@@ -7,6 +7,10 @@ on:
       - 'data/**'           # data-only pushes handled by retrain.yml
   workflow_dispatch:
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
