@@ -43,9 +43,12 @@ jobs:
         run: |
           docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/insurance-predictor:${{ github.sha }} .
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/insurance-predictor:${{ github.sha }}
+          docker tag ${{ secrets.REGISTRY_LOGIN_SERVER }}/insurance-predictor:${{ github.sha }} ${{ secrets.REGISTRY_LOGIN_SERVER }}/insurance-predictor:latest
+          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/insurance-predictor:latest
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'Patient-Insurance-Charges-Prediction'
-          images: ${{ secrets.REGISTRY_LOGIN_SERVER }}/insurance-predictor:${{ github.sha }}
+          slot-name: 'production'
+          images: ${{ secrets.REGISTRY_LOGIN_SERVER }}/insurance-predictor:latest
